@@ -29,24 +29,27 @@ def obtem_escolha_usuario():
 def imprime_blockchain():
     # saida da lista blockchain no console
     for block in blockchain:
-        print('Saida do Blockchain')
+        print('Saida do Blockchain: ')
         print(block)
+    else:
+        print('-' *20)
 
 
 def verifica_chave():
     indice_bloco = 0
     integridade = True
-    for block in blockchain:
+    for indice_bloco in range(len(blockchain)):
         if indice_bloco == 0:
-            indice_bloco += 1
             continue
-        if block[0] == blockchain[indice_bloco - 1]:
+        if blockchain[indice_bloco][0]== blockchain[indice_bloco - 1]:
             integridade = True
         else:
             integridade = False
             break
+    '''for block in blockchain:
+        
         indice_bloco += 1
-    return integridade
+    return integridade'''
 
 esperando_entrada = True
 
@@ -68,10 +71,13 @@ while esperando_entrada:
         if len(blockchain) >= 1:
             blockchain[0] = [2]
     elif escolha == 's':
-        esperando_entrada = Falses
+        esperando_entrada = False
     else:
         print('Entrada inválida, pegue um valor das opções! ')
     if not verifica_chave():
+        imprime_blockchain()
         print('Blockchain inválido!')
+else:
+    print('Deixando usuário')
 
 print('Realizado')
