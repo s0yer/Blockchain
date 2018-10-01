@@ -1,6 +1,10 @@
 #Inicializando a lista blockchain
-blockchain =[]
+blockchain = []
+transacao_aberta = []
+proprietario = 'Jadson'
 
+def mine_block():
+    pass
 
 def obtem_ultimo_valor():
     """Retorna o ultimo valor corrente do blockchain"""
@@ -10,15 +14,23 @@ def obtem_ultimo_valor():
         return blockchain[-1]
 
 
-def add_transacao(valor_transacao, ultima_transacao=[1]):
-    """Anexa um novo valor como bloco no blockchain """
-    if ultima_transacao == None:
-        ultima_transacao = [1]
-    blockchain.append([ultima_transacao, valor_transacao])
+def add_transacao(destinatario, remetente = proprietario, valor=1.0):
+    """Anexa um novo valor como bloco no blockchain
+        remetente: quem envia o valor
+        destinatário: recebe o valor.
+    """
+    transacao = {
+        'remetente': remetente,
+        'destinatario': destinatario,
+        'valor': valor
+    }
+    transacao_aberta.append(transacao)
 
 
 def obtem_valor_transacao():
-    return float(input('Entre com o seu valor de transação:' ))
+    tx_remetente = input('Entre para quem deseja enviar o valor: ')
+    tx_valor = float(input('Entre com o seu valor de transação:' ))
+    return (tx_remetente, tx_valor)
 
 
 def obtem_escolha_usuario():
@@ -63,20 +75,29 @@ while esperando_entrada:
     escolha = obtem_escolha_usuario()
 
     if escolha == '1':
-        tx_valor = obtem_valor_transacao()
-        add_transacao(tx_valor, obtem_ultimo_valor())
+        tx_dados = obtem_valor_transacao()
+        destinatario, valor = tx_dados
+        add_transacao(destinatario, valor=valor)
+
+        print(transacao_aberta)
+
     elif escolha == '2':
         imprime_blockchain()
+
     elif escolha == 'h':
         if len(blockchain) >= 1:
             blockchain[0] = [2]
+
     elif escolha == 's':
         esperando_entrada = False
+
     else:
         print('Entrada inválida, pegue um valor das opções! ')
+
     if not verifica_chave():
         imprime_blockchain()
         print('Blockchain inválido!')
+
 else:
     print('Deixando usuário')
 
