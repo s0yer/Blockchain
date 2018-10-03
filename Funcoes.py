@@ -7,6 +7,23 @@ bloco_genesis = {
 blockchain = [bloco_genesis]
 transacao_aberta = []
 proprietario = 'Jadson'
+# criação de set para lista de participantes
+participantes = {'Jadson'}
+
+def obtem_saldo(participante):
+    tx_remetente = [[tx['valor']for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
+    valor_enviado = 0
+    for tx in tx_remetente:
+        if len(tx)>0:
+            valor_enviado += tx[0]
+
+    tx_destinatario = [[tx['valor']for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
+    valor_recebido = 0
+    for tx in tx_destinatario:
+        if len(tx)>0:
+            valor_recebido += tx[0]
+
+    return valor_recebido - valor_recebido
 
 def hash_bloco(bloco):
     return '-'.join([str(bloco[k]) for k in bloco])
@@ -20,7 +37,7 @@ def mine_block():
              'transacoes': transacao_aberta
              }
     blockchain.append(block)
-
+    return True
 
 def obtem_ultimo_valor():
     """Retorna o ultimo valor corrente do blockchain"""
@@ -41,6 +58,8 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         'valor': valor
     }
     transacao_aberta.append(transacao)
+    participantes.add(remetente)
+    participantes.add(destinatario)
 
 
 
