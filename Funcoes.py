@@ -1,3 +1,5 @@
+RECOMPENSA_MINERACAO = 10
+
 #Inicializando a lista blockchain
 bloco_genesis = {
     'hash_anterior': '',
@@ -10,17 +12,25 @@ proprietario = 'Jadson'
 # criação de set para lista de participantes
 participantes = {'Jadson'}
 
+#def verifica_transacao(transacao):
+
+def verifica_transacao(transacao):
+    saldo_remetente = obtem_saldo(transacao['remetente'])
+    return saldo_remetente >= transacao['valor']
+
+
 def obtem_saldo(participante):
-    tx_remetente = [[tx['valor']for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
+    tx_remetente = [[tx['valor'] for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
+
     valor_enviado = 0
     for tx in tx_remetente:
-        if len(tx)>0:
+        if len(tx) > 0:
             valor_enviado += tx[0]
 
-    tx_destinatario = [[tx['valor']for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
+    tx_destinatario = [[tx['valor'] for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
     valor_recebido = 0
     for tx in tx_destinatario:
-        if len(tx)>0:
+        if len(tx) > 0:
             valor_recebido += tx[0]
 
     return valor_recebido - valor_recebido
@@ -31,12 +41,20 @@ def hash_bloco(bloco):
 def mine_block():
     ultimo_bloco = blockchain[-1]
     bloco_hashed = hash_bloco(ultimo_bloco)
+    transacao_recompensa ={
+        'remetente': 'MINERACAO',
+        'destinatario': proprietario,
+        'valor': RECOMPENSA_MINERACAO
+    }
+    transacao_aberta.append(transacao_recompensa)
 
-    block = {'hash_anterior': bloco_hashed,
+    bloco = {'hash_anterior': bloco_hashed,
              'indice': len(blockchain),
              'transacoes': transacao_aberta
              }
-    blockchain.append(block)
+    blockchain.append(bloco)
+    print(proprietario)
+    print(RECOMPENSA_MINERACAO)
     return True
 
 def obtem_ultimo_valor():
@@ -57,11 +75,12 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         'destinatario': destinatario,
         'valor': valor
     }
-    transacao_aberta.append(transacao)
-    participantes.add(remetente)
-    participantes.add(destinatario)
-
-
+    if verifica_transacao(transacao):
+        transacao_aberta.append(transacao)
+        participantes.add(remetente)
+        participantes.add(destinatario)
+        return True
+    return False
 
 def obtem_valor_transacao():
     tx_remetente = input('Entre para quem deseja enviar o valor: ')

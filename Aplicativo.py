@@ -49,7 +49,7 @@ while esperando_entrada:
         # Sai fora do Loop
         break
     print(obtem_saldo('Jadson'))
+
 else:
     print('Deixando usuário')
-
 print('Realizado')
