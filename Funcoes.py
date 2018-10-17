@@ -33,7 +33,7 @@ def obtem_saldo(participante):
         if len(tx) > 0:
             valor_recebido += tx[0]
 
-    return valor_recebido - valor_recebido
+    return valor_recebido - valor_enviado
 
 def hash_bloco(bloco):
     return '-'.join([str(bloco[k]) for k in bloco])
@@ -43,18 +43,18 @@ def mine_block():
     bloco_hashed = hash_bloco(ultimo_bloco)
     transacao_recompensa ={
         'remetente': 'MINERACAO',
-        'destinatario': proprietario,
+        'destinatario': 'Jadson',
         'valor': RECOMPENSA_MINERACAO
     }
     transacao_aberta.append(transacao_recompensa)
 
-    bloco = {'hash_anterior': bloco_hashed,
+    bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
              'indice': len(blockchain),
              'transacoes': transacao_aberta
              }
     blockchain.append(bloco)
     print(proprietario)
-    print(RECOMPENSA_MINERACAO)
+    print(obtem_saldo(proprietario))
     return True
 
 def obtem_ultimo_valor():

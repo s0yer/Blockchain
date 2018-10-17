@@ -9,6 +9,7 @@ while esperando_entrada:
     print('p: Mostrar os participantes:')
     print('m: Minerar um novo bloco')
     print('h: Manipular o blockchain')
+    print('o: Obtem saldo do participante')
     print('s: Sair. ')
 
     escolha = obtem_escolha_usuario()
@@ -26,8 +27,12 @@ while esperando_entrada:
         print(participantes)
 
     elif escolha == 'm':
+
         if mine_block():
             transacao_aberta = []
+        '''else:
+            mine_block()'''
+
 
     elif escolha == 'h':
         if len(blockchain) >= 1:
@@ -40,6 +45,9 @@ while esperando_entrada:
     elif escolha == 's':
         esperando_entrada = False
 
+    elif escolha == 'o':
+        print(obtem_saldo(obtem_escolha_usuario()))
+
     else:
         print('Entrada inválida, pegue um valor das opções! ')
 
@@ -48,7 +56,7 @@ while esperando_entrada:
         print('Blockchain inválido!')
         # Sai fora do Loop
         break
-    print(obtem_saldo('Jadson'))
+
 
 else:
     print('Deixando usuário')
