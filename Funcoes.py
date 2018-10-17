@@ -69,6 +69,7 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
     """Anexa um novo valor como bloco no blockchain
         remetente: quem envia o valor
         destinatário: recebe o valor.
+        valor: quantia trasferida
     """
     transacao = {
         'remetente': remetente,
@@ -110,18 +111,3 @@ def verifica_chave():
         if bloco['hash_anterior'] != hash_bloco(blockchain[indice-1]):
             return False
     return True
-
-    '''indice_bloco = 0
-    
-    for indice_bloco in range(len(blockchain)):
-        if indice_bloco == 0:
-            continue
-        if blockchain[indice_bloco][0] == blockchain[indice_bloco - 1]:
-            integridade = True
-        else:
-            integridade = False
-            break
-    for block in blockchain:
-    integridade = True
-        indice_bloco += 1
-    return integridade'''
