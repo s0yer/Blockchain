@@ -49,8 +49,9 @@ def mine_block():
         'destinatario': 'Jadson',
         'valor': RECOMPENSA_MINERACAO
     }
+    #cria uma nova lista igual a lista de transação aberta
+    transacao_copiada = transacao_aberta[:]
     transacao_aberta.append(transacao_recompensa)
-
     bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
              'indice': len(blockchain),
              'transacoes': transacao_aberta
@@ -115,3 +116,9 @@ def verifica_chave():
         if bloco['hash_anterior'] != hash_bloco(blockchain[indice-1]):
             return False
     return True
+
+def verifica_trasacoes():
+    #todas as transações devem ser verdadeiras
+    return all([verifica_transacao(tx) for tx in transacao_aberta])
+
+

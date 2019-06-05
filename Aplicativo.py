@@ -9,6 +9,7 @@ while esperando_entrada:
     print('p: Mostrar os participantes:')
     print('m: Minerar um novo bloco')
     print('h: Manipular o blockchain')
+    print('c: Checa validade da transasao')
     print('o: Obtem saldo do participante')
     print('s: Sair. ')
 
@@ -47,6 +48,12 @@ while esperando_entrada:
                 'indice': 0,
                 'transacoes': [{'remetente': 'Jadson', 'destinatario': 'Kaline', 'valor': 8000.0}]
             }
+
+    elif escolha == 'c':
+        if verifica_trasacoes():
+            print('Todas transacoes são validas')
+        else:
+            print('Existe(m) transacoes invalidas')
 
     elif escolha == 's':
         esperando_entrada = False
