@@ -4,8 +4,8 @@ esperando_entrada = True
 
 while esperando_entrada:
     print('Escolha a opção: ')
-    print('1: Adicionar uma nova transação')
-    print('2: Mostrar no console os elementos blockchain:')
+    print('n: Adicionar uma nova transação')
+    print('i: Mostrar no console os elementos blockchain:')
     print('p: Mostrar os participantes:')
     print('m: Minerar um novo bloco')
     print('h: Manipular o blockchain')
@@ -14,15 +14,21 @@ while esperando_entrada:
 
     escolha = obtem_escolha_usuario()
 
-    if escolha == '1':
+    if escolha == 'n':
         tx_dados = obtem_valor_transacao()
         destinatario, valor = tx_dados
-        add_transacao(destinatario, valor=valor)
+        #Adiciona a o valor da transação para o blackchain
+        if add_transacao(destinatario, valor=valor):
+            print('Transação adicionada')
+        else:
+            print('Falha na transação')
 
         print(transacao_aberta)
 
-    elif escolha == '2':
+
+    elif escolha == 'i':
         imprime_blockchain()
+
     elif escolha == 'p':
         print(participantes)
 
@@ -60,4 +66,4 @@ while esperando_entrada:
 
 else:
     print('Deixando usuário')
-print('Realizado')
+    print('Realizado')

@@ -1,3 +1,4 @@
+# coding=utf-8
 RECOMPENSA_MINERACAO = 10
 
 #Inicializando a lista blockchain
@@ -21,6 +22,8 @@ def verifica_transacao(transacao):
 
 def obtem_saldo(participante):
     tx_remetente = [[tx['valor'] for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
+    aberta_tx_remetente = [tx['valor'] for tx in transacao_aberta if tx['remetente'] == participante]
+    tx_remetente.append(aberta_tx_remetente)
 
     valor_enviado = 0
     for tx in tx_remetente:
@@ -63,6 +66,7 @@ def obtem_ultimo_valor():
         return None
     else:
         return blockchain[-1]
+
 
 
 def add_transacao(destinatario, remetente=proprietario, valor=1.0):
