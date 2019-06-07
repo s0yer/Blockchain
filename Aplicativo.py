@@ -70,7 +70,10 @@ while esperando_entrada:
         # Sai fora do Loop
         break
 
+    print('O saldo de {}: {:6.2f}'.format('Jadson', obtem_saldo('Jadson')))
+
 
 else:
     print('Deixando usuário')
-    print('Realizado')
+
+print('OK')
