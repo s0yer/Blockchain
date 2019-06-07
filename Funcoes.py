@@ -1,3 +1,5 @@
+import functools
+
 # coding=utf-8
 RECOMPENSA_MINERACAO = 10
 
@@ -21,20 +23,33 @@ def verifica_transacao(transacao):
 
 
 def obtem_saldo(participante):
+    #buca a lista de todos montantes enviados para uma dada pessoa
+    #busca os montantes enviados de transações abertas
     tx_remetente = [[tx['valor'] for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
     aberta_tx_remetente = [tx['valor'] for tx in transacao_aberta if tx['remetente'] == participante]
     tx_remetente.append(aberta_tx_remetente)
 
+    # calcula o total de moedas a serem enviadas
+    valor_enviado = functools.reduce(lambda tx_soma, tx_montante: tx_soma + tx_montante[0] if len(tx_montante)>0 else 0, tx_remetente, 0)
+
+    """
+    codigo antigo
     valor_enviado = 0
+    
     for tx in tx_remetente:
         if len(tx) > 0:
-            valor_enviado += tx[0]
+            valor_enviado += tx[0]"""
 
+    # busca o montante de moedas recebidas, é ignorado aqui transações abertas
     tx_destinatario = [[tx['valor'] for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
+    valor_recebido = functools.reduce(lambda tx_soma, tx_montante: tx_soma + tx_montante[0] if len(tx_montante) > 0 else 0, tx_destinatario, 0)
+
+    """
+    codigo antigo
     valor_recebido = 0
     for tx in tx_destinatario:
         if len(tx) > 0:
-            valor_recebido += tx[0]
+            valor_recebido += tx[0]"""
 
     return valor_recebido - valor_enviado
 
