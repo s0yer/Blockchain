@@ -30,7 +30,7 @@ def obtem_saldo(participante):
     tx_remetente.append(aberta_tx_remetente)
 
     # calcula o total de moedas a serem enviadas
-    valor_enviado = functools.reduce(lambda tx_soma, tx_montante: tx_soma + tx_montante[0] if len(tx_montante)>0 else 0, tx_remetente, 0)
+    valor_enviado = functools.reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante)>0 else 0, tx_remetente, 0)
 
     """
     codigo antigo
@@ -42,7 +42,7 @@ def obtem_saldo(participante):
 
     # busca o montante de moedas recebidas, é ignorado aqui transações abertas
     tx_destinatario = [[tx['valor'] for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
-    valor_recebido = functools.reduce(lambda tx_soma, tx_montante: tx_soma + tx_montante[0] if len(tx_montante) > 0 else 0, tx_destinatario, 0)
+    valor_recebido = functools.reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else 0, tx_destinatario, 0)
 
     """
     codigo antigo
