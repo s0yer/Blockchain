@@ -18,6 +18,7 @@ while esperando_entrada:
     if escolha == 'n':
         tx_dados = obtem_valor_transacao()
         destinatario, valor = tx_dados
+
         #Adiciona a o valor da transação para o blackchain
         if add_transacao(destinatario, valor=valor):
             print('Transação adicionada')

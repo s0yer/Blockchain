@@ -1,6 +1,9 @@
-import functools
+from functools import reduce
+import hashlib as hl
+import json
 
 # coding=utf-8
+#recompensa dada aos mineradores (por criar um novo bloco)
 RECOMPENSA_MINERACAO = 10
 
 #Inicializando a lista blockchain
@@ -9,13 +12,19 @@ bloco_genesis = {
     'indice': 0,
     'transacoes': []
 }
+#criação do blockchain como lista vazia
 blockchain = [bloco_genesis]
+
+#transações não tratadas
 transacao_aberta = []
+
+#Proprietário deste no blockchain, minha identificação como owner
 proprietario = 'Jadson'
+
 # criação de set para lista de participantes
 participantes = {'Jadson'}
 
-#def verifica_transacao(transacao):
+
 
 def verifica_transacao(transacao):
     saldo_remetente = obtem_saldo(transacao['remetente'])
@@ -23,14 +32,20 @@ def verifica_transacao(transacao):
 
 
 def obtem_saldo(participante):
+    """Calcula e retorna o saldo para um participante.
+
+        :participante: A pessoa para a qual é calculado o saldo.
+
+    """
+
     #buca a lista de todos montantes enviados para uma dada pessoa
     #busca os montantes enviados de transações abertas
     tx_remetente = [[tx['valor'] for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
     aberta_tx_remetente = [tx['valor'] for tx in transacao_aberta if tx['remetente'] == participante]
     tx_remetente.append(aberta_tx_remetente)
-
+    print(tx_remetente)
     # calcula o total de moedas a serem enviadas
-    valor_enviado = functools.reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante)>0 else 0, tx_remetente, 0)
+    valor_enviado = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_remetente, 0)
 
     """
     codigo antigo
@@ -42,7 +57,7 @@ def obtem_saldo(participante):
 
     # busca o montante de moedas recebidas, é ignorado aqui transações abertas
     tx_destinatario = [[tx['valor'] for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
-    valor_recebido = functools.reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else 0, tx_destinatario, 0)
+    valor_recebido = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_destinatario, 0)
 
     """
     codigo antigo
@@ -53,23 +68,34 @@ def obtem_saldo(participante):
 
     return valor_recebido - valor_enviado
 
+
 def hash_bloco(bloco):
-    return '-'.join([str(bloco[k]) for k in bloco])
+    """ Tira o hash de um bloco e retorna uma string representando o hash
+
+        Argumentos:
+        :bloco: Deve ser tirado o hash do bloco
+    """
+    #return '-'.join([str(bloco[k]) for k in bloco])
+    return hl.sha256(json.dumps(bloco).encode()).hexdigest()
 
 def mine_block():
+    #busca o ultimo bloco corrente do blockchain
     ultimo_bloco = blockchain[-1]
+    #hash do ultimo bloco, para comparar com o valor guardado
     bloco_hashed = hash_bloco(ultimo_bloco)
+    print(bloco_hashed)
+    #transação de recompensa para os mineradores
     transacao_recompensa ={
         'remetente': 'MINERACAO',
         'destinatario': 'Jadson',
         'valor': RECOMPENSA_MINERACAO
     }
-    #cria uma nova lista igual a lista de transação aberta
+    #cria uma nova lista igual a lista de transação aberta, para nao manipular a lista original de transação aberta
     transacao_copiada = transacao_aberta[:]
-    transacao_aberta.append(transacao_recompensa)
+    transacao_copiada.append(transacao_recompensa)
     bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
              'indice': len(blockchain),
-             'transacoes': transacao_aberta
+             'transacoes': transacao_copiada
              }
     blockchain.append(bloco)
     print(proprietario)
