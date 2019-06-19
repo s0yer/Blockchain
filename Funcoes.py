@@ -10,7 +10,8 @@ RECOMPENSA_MINERACAO = 10
 bloco_genesis = {
     'hash_anterior': '',
     'indice': 0,
-    'transacoes': []
+    'transacoes': [],
+    'prova': 100
 }
 #criação do blockchain como lista vazia
 blockchain = [bloco_genesis]
@@ -24,6 +25,29 @@ proprietario = 'Jadson'
 # criação de set para lista de participantes
 participantes = {'Jadson'}
 
+def hash_bloco(bloco):
+    """ Tira o hash de um bloco e retorna uma string representando o hash
+
+        Argumentos:
+        :bloco: Deve ser tirado o hash do bloco
+    """
+    #return '-'.join([str(bloco[k]) for k in bloco])
+    return hl.sha256(json.dumps(bloco).encode()).hexdigest()
+
+def prova_validade(transacoes, ultimo_hash, prova):
+    suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
+    suposicao_hash = hl.sha256(suposicao).hexdigest()
+    print(suposicao_hash)
+    return suposicao_hash[0:2] == '00'
+
+
+def prova_trabalho():
+    ultimo_bloco = blockchain[-1]
+    ultimo_hash = hash_bloco(ultimo_bloco)
+    prova = 0
+    while not prova_validade(transacao_aberta, ultimo_hash, prova):
+        prova += 1
+    return prova
 
 
 def verifica_transacao(transacao):
@@ -69,21 +93,13 @@ def obtem_saldo(participante):
     return valor_recebido - valor_enviado
 
 
-def hash_bloco(bloco):
-    """ Tira o hash de um bloco e retorna uma string representando o hash
-
-        Argumentos:
-        :bloco: Deve ser tirado o hash do bloco
-    """
-    #return '-'.join([str(bloco[k]) for k in bloco])
-    return hl.sha256(json.dumps(bloco).encode()).hexdigest()
-
 def mine_block():
     #busca o ultimo bloco corrente do blockchain
     ultimo_bloco = blockchain[-1]
     #hash do ultimo bloco, para comparar com o valor guardado
     bloco_hashed = hash_bloco(ultimo_bloco)
-    print(bloco_hashed)
+
+    prova = prova_trabalho()
     #transação de recompensa para os mineradores
     transacao_recompensa ={
         'remetente': 'MINERACAO',
@@ -95,7 +111,8 @@ def mine_block():
     transacao_copiada.append(transacao_recompensa)
     bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
              'indice': len(blockchain),
-             'transacoes': transacao_copiada
+             'transacoes': transacao_copiada,
+             'prova': prova
              }
     blockchain.append(bloco)
     print(proprietario)
@@ -155,6 +172,9 @@ def verifica_chave():
         if indice == 0:
             continue
         if bloco['hash_anterior'] != hash_bloco(blockchain[indice-1]):
+            return False
+        if not prova_validade(bloco['transacoes'][:-1], bloco['hash_anterior'], bloco['prova']):
+            print('Prova de trabalho não é válida ...!!')
             return False
     return True
 
