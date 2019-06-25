@@ -1,6 +1,7 @@
 from functools import reduce
 import hashlib as hl
 import json
+from collections import OrderedDict
 
 # coding=utf-8
 #recompensa dada aos mineradores (por criar um novo bloco)
@@ -32,7 +33,7 @@ def hash_bloco(bloco):
         :bloco: Deve ser tirado o hash do bloco
     """
     #return '-'.join([str(bloco[k]) for k in bloco])
-    return hl.sha256(json.dumps(bloco).encode()).hexdigest()
+    return hl.sha256(json.dumps(bloco, sort_keys=True).encode()).hexdigest()
 
 def prova_validade(transacoes, ultimo_hash, prova):
     suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
@@ -68,16 +69,13 @@ def obtem_saldo(participante):
     aberta_tx_remetente = [tx['valor'] for tx in transacao_aberta if tx['remetente'] == participante]
     tx_remetente.append(aberta_tx_remetente)
     print(tx_remetente)
+
     # calcula o total de moedas a serem enviadas
     valor_enviado = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_remetente, 0)
-
-
 
     # busca o montante de moedas recebidas, é ignorado aqui transações abertas
     tx_destinatario = [[tx['valor'] for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
     valor_recebido = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_destinatario, 0)
-
-
 
     return valor_recebido - valor_enviado
 
@@ -90,11 +88,14 @@ def mine_block():
 
     prova = prova_trabalho()
     #transação de recompensa para os mineradores
-    transacao_recompensa ={
+    """transacao_recompensa ={
         'remetente': 'MINERACAO',
         'destinatario': 'Jadson',
         'valor': RECOMPENSA_MINERACAO
-    }
+    }"""
+    transacao_recompensa=OrderedDict([('remetente','MINERACAO'),('destinatario','Jadson'),('valor','RECOMPENSA_MINERACAO')])
+
+
     #cria uma nova lista igual a lista de transação aberta, para nao manipular a lista original de transação aberta
     transacao_copiada = transacao_aberta[:]
     transacao_copiada.append(transacao_recompensa)
@@ -123,11 +124,13 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         destinatário: recebe o valor.
         valor: quantia trasferida
     """
-    transacao = {
+    """transacao = {
         'remetente': remetente,
         'destinatario': destinatario,
         'valor': valor
-    }
+    }"""
+    transacao = OrderedDict([('remetente',remetente),('destinatario',destinatario),('valor',valor)])
+
     if verifica_transacao(transacao):
         transacao_aberta.append(transacao)
         participantes.add(remetente)
