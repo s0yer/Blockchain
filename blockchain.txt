@@ -1,0 +1,2 @@
+[{'hash_anterior': '', 'indice': 0, 'transacoes': [], 'prova': 100}, {'hash_anterior': '9a1dd47a50c153919f3e87a513c7eb26f5e67ddaa0d5b2d4bece73927a7fc19f', 'indice': 1, 'transacoes': [OrderedDict([('remetente', 'MINERACAO'), ('destinatario', 'Jadson'), ('valor', 10)])], 'prova': 531}]
+[]

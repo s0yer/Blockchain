@@ -2,6 +2,8 @@ from Funcoes import *
 
 esperando_entrada = True
 
+carrega_dados()
+
 while esperando_entrada:
     print('Escolha a opção: ')
     print('n: Adicionar uma nova transação')

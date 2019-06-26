@@ -1,8 +1,9 @@
-from functools import reduce
-import hashlib as hl
-from collections import OrderedDict
+from Hash_util import hash_string_256, hash_bloco
 
-from hash_util import hash_string_256, hash_bloco
+from functools import reduce
+from collections import OrderedDict
+import hashlib as hl
+
 
 # coding=utf-8
 #recompensa dada aos mineradores (por criar um novo bloco)
@@ -27,6 +28,26 @@ proprietario = 'Jadson'
 # criação de set para lista de participantes
 participantes = {'Jadson'}
 
+def carrega_dados():
+    with open('blockchain.txt', mode='r') as arq:
+        conteudo_arquivo = arq.readlines()
+
+        global blockchain
+        global transacao_aberta
+        blockchain = conteudo_arquivo[0]
+        transacao_aberta = conteudo_arquivo[1]
+
+
+def salvar_dados():
+
+    try:
+        with open('blockchain.txt', mode='w') as arq:
+            arq.write(str(blockchain))
+            arq.write('\n')
+            arq.write(str(transacao_aberta))
+        print('Blockchain salvo com sucesso')
+    except:
+        print('Erro ao gravar o blockchain')
 
 
 def prova_validade(transacoes, ultimo_hash, prova):
@@ -99,8 +120,11 @@ def mine_block():
              'prova': prova
              }
     blockchain.append(bloco)
+    salvar_dados()
+
     print(proprietario)
     print(obtem_saldo(proprietario))
+
     return True
 
 def obtem_ultimo_valor():
@@ -129,6 +153,7 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         transacao_aberta.append(transacao)
         participantes.add(remetente)
         participantes.add(destinatario)
+        salvar_dados()
         return True
     return False
 
