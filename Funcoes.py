@@ -1,7 +1,8 @@
 from functools import reduce
 import hashlib as hl
-import json
 from collections import OrderedDict
+
+from hash_util import hash_string_256, hash_bloco
 
 # coding=utf-8
 #recompensa dada aos mineradores (por criar um novo bloco)
@@ -26,18 +27,11 @@ proprietario = 'Jadson'
 # criação de set para lista de participantes
 participantes = {'Jadson'}
 
-def hash_bloco(bloco):
-    """ Tira o hash de um bloco e retorna uma string representando o hash
 
-        Argumentos:
-        :bloco: Deve ser tirado o hash do bloco
-    """
-    #return '-'.join([str(bloco[k]) for k in bloco])
-    return hl.sha256(json.dumps(bloco, sort_keys=True).encode()).hexdigest()
 
 def prova_validade(transacoes, ultimo_hash, prova):
     suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
-    suposicao_hash = hl.sha256(suposicao).hexdigest()
+    suposicao_hash = hash_string_256(suposicao)
     print(suposicao_hash)
     return suposicao_hash[0:2] == '00'
 
@@ -85,15 +79,15 @@ def mine_block():
     ultimo_bloco = blockchain[-1]
     #hash do ultimo bloco, para comparar com o valor guardado
     bloco_hashed = hash_bloco(ultimo_bloco)
-
+    print(bloco_hashed)
     prova = prova_trabalho()
     #transação de recompensa para os mineradores
     """transacao_recompensa ={
         'remetente': 'MINERACAO',
-        'destinatario': 'Jadson',
+        'destinatario': proprietario,
         'valor': RECOMPENSA_MINERACAO
     }"""
-    transacao_recompensa=OrderedDict([('remetente','MINERACAO'),('destinatario','Jadson'),('valor','RECOMPENSA_MINERACAO')])
+    transacao_recompensa = OrderedDict([('remetente','MINERACAO'),('destinatario', proprietario),('valor',RECOMPENSA_MINERACAO)])
 
 
     #cria uma nova lista igual a lista de transação aberta, para nao manipular a lista original de transação aberta
