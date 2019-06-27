@@ -1,5 +1,5 @@
 from Hash_util import hash_string_256, hash_bloco
-
+import json
 from functools import reduce
 from collections import OrderedDict
 import hashlib as hl
@@ -34,26 +34,51 @@ def carrega_dados():
 
         global blockchain
         global transacao_aberta
-        blockchain = conteudo_arquivo[0]
-        transacao_aberta = conteudo_arquivo[1]
+        blockchain = json.loads(conteudo_arquivo[0][:-1])
+        #blockchain = [{'hash_anterior': bloco['hash_anterior'], 'index': bloco['index'], 'prova': bloco['prova'], 'transacoes': []} por bloco in blockchain ]
 
+        blockchain_atualizado = []
+
+        for bloco in blockchain:
+            bloco_atualizado = {
+                'hash_anterior': bloco['hash_anterior'],
+                'indice': bloco['indice'],
+                'prova': bloco['prova'],
+                'transacoes': [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
+            }
+            blockchain_atualizado.append(bloco_atualizado)
+
+        blockchain = blockchain_atualizado
+
+        transacoes_atualizadas = []
+        transacao_aberta = json.loads(conteudo_arquivo[1])
+        for tx in transacao_aberta:
+            transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
+            transacoes_atualizadas.append(transacao_atualizada)
+        transacao_aberta = transacoes_atualizadas
 
 def salvar_dados():
 
     try:
         with open('blockchain.txt', mode='w') as arq:
-            arq.write(str(blockchain))
+            arq.write(json.dumps(blockchain))
             arq.write('\n')
-            arq.write(str(transacao_aberta))
+            arq.write(json.dumps(transacao_aberta))
         print('Blockchain salvo com sucesso')
     except:
         print('Erro ao gravar o blockchain')
 
 
 def prova_validade(transacoes, ultimo_hash, prova):
+    #cria string com as entradas de hash
     suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
+    print(suposicao)
+    #string de hash
+    #não é o mesmo hash que será guardado em hash_anterior
     suposicao_hash = hash_string_256(suposicao)
     print(suposicao_hash)
+    #apenas o hash(que é baseado nas entrados abaixo), que começam com 2 zeros '00'
+    #Esta condição que pode ser definida de outra forma
     return suposicao_hash[0:2] == '00'
 
 
@@ -120,7 +145,6 @@ def mine_block():
              'prova': prova
              }
     blockchain.append(bloco)
-    salvar_dados()
 
     print(proprietario)
     print(obtem_saldo(proprietario))

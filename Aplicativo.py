@@ -40,6 +40,7 @@ while esperando_entrada:
 
         if mine_block():
             transacao_aberta = []
+            salvar_dados()
         '''else:
             mine_block()'''
 
