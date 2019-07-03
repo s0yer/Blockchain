@@ -7,9 +7,11 @@ import hashlib as hl
 
 # coding=utf-8
 #recompensa dada aos mineradores (por criar um novo bloco)
+#recompensation given to miners (for creating a new block)
 RECOMPENSA_MINERACAO = 10
 
 #Inicializando a lista blockchain
+#Initializing the blockchain list
 bloco_genesis = {
     'hash_anterior': '',
     'indice': 0,
@@ -17,15 +19,19 @@ bloco_genesis = {
     'prova': 100
 }
 #criação do blockchain como lista vazia
+#blockchain creation as empty list
 blockchain = [bloco_genesis]
 
 #transações não tratadas
+# unhandled transactions
 transacao_aberta = []
 
 #Proprietário deste no blockchain, minha identificação como owner
+#Owner of this in blockchain, my owner ID
 proprietario = 'Jadson'
 
-# criação de set para lista de participantes
+#criação de set para lista de participantes
+#set creation for participant list
 participantes = {'Jadson'}
 
 def carrega_dados():
@@ -71,10 +77,12 @@ def salvar_dados():
 
 def prova_validade(transacoes, ultimo_hash, prova):
     #cria string com as entradas de hash
+    #create string with hash entries
     suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
     print(suposicao)
     #string de hash
     #não é o mesmo hash que será guardado em hash_anterior
+    #is not the same hash that will be saved in hash_previous
     suposicao_hash = hash_string_256(suposicao)
     print(suposicao_hash)
     #apenas o hash(que é baseado nas entrados abaixo), que começam com 2 zeros '00'
