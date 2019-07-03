@@ -36,17 +36,17 @@ proprietario = 'Jadson'
 participantes = {'Jadson'}
 
 def carrega_dados():
-    with open('blockchain.p', mode='rb') as arq:
-        #pickle loads para arquivos binários
-        #pickle não perde informações como o json no caso desta aplicação
-        conteudo_arquivo = pickle.loads(arq.read())
-        print(conteudo_arquivo)
+    with open('blockchain.txt', mode='r') as arq:
+
+        # #pickle loads para arquivos binários
+        # #pickle não perde informações como o json no caso desta aplicação
+        # conteudo_arquivo = pickle.loads(arq.read())
+        # print(conteudo_arquivo)
+        conteudo_arquivo = arq.readlines()
         global blockchain
         global transacao_aberta
-        blockchain = conteudo_arquivo['chain']
-        transacao_aberta = conteudo_arquivo['ta']
-
-        '''
+        # blockchain = conteudo_arquivo['chain']
+        # transacao_aberta = conteudo_arquivo['ta']
         blockchain = json.loads(conteudo_arquivo[0][:-1])
         #blockchain = [{'hash_anterior': bloco['hash_anterior'], 'index': bloco['index'], 'prova': bloco['prova'], 'transacoes': []} por bloco in blockchain ]
 
@@ -68,24 +68,24 @@ def carrega_dados():
         for tx in transacao_aberta:
             transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
             transacoes_atualizadas.append(transacao_atualizada)
-        transacao_aberta = transacoes_atualizadas '''
+        transacao_aberta = transacoes_atualizadas
 
 def salvar_dados():
 
     try:
         #mode w for json, mode wb for binary
         #extensão arquivo binário p, arquivo txt
-        with open('blockchain.p', mode='wb') as arq:
+        with open('blockchain.txt', mode='w') as arq:
 
-            '''arq.write(json.dumps(blockchain))
+            arq.write(json.dumps(blockchain))
             arq.write('\n')
-            arq.write(json.dumps(transacao_aberta))'''
+            arq.write(json.dumps(transacao_aberta))
 
-            salva_dados = {
-                'chain': blockchain,
-                'ta': transacao_aberta
-            }
-            arq.write(pickle.dumps(salva_dados))
+            # salva_dados = {
+            #     'chain': blockchain,
+            #     'ta': transacao_aberta
+            # }
+            # arq.write(pickle.dumps(salva_dados))
 
         print('Blockchain salvo com sucesso')
     except:
