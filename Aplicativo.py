@@ -2,8 +2,10 @@ from Funcoes import *
 
 esperando_entrada = True
 
+# Carrega dados gravados no arquivo blockchain.txt / Loads data recorded in the file blockchain.txt
 carrega_dados()
 
+# Tela de entrada para atividades com o blockchain / Entry screen for activities with blockchain
 while esperando_entrada:
     print('Escolha a opção: ')
     print('n: Adicionar uma nova transação')
@@ -68,12 +70,14 @@ while esperando_entrada:
     else:
         print('Entrada inválida, pegue um valor das opções! ')
 
+    # Verifica Integridade do blockchain / Verify blockchain integrity
     if not verifica_chave():
         imprime_blockchain()
         print('Blockchain inválido!')
         # Sai fora do Loop
         break
 
+    # Mostra o saldo do proprietário do blockchain / Shows the balance of the owner of the blockchain
     print('O saldo de {}: {:6.2f}'.format('Jadson', obtem_saldo('Jadson')))
 
 

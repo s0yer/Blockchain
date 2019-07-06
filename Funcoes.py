@@ -65,6 +65,7 @@ def carrega_dados():
             transacoes_atualizadas.append(transacao_atualizada)
         transacao_aberta = transacoes_atualizadas
 
+# Salva estado do blockchain em formato json em um arquivo .txt / Save blockchain state in json format to a .txt file
 def salvar_dados():
 
     try:
@@ -100,6 +101,7 @@ def prova_validade(transacoes, ultimo_hash, prova):
     return suposicao_hash[0:2] == '00'
 
 
+# Verifica se o trabalho de mineração efetuado é válido / Checks whether the mining work done is valid
 def prova_trabalho():
     ultimo_bloco = blockchain[-1]
     ultimo_hash = hash_bloco(ultimo_bloco)
@@ -108,12 +110,12 @@ def prova_trabalho():
         prova += 1
     return prova
 
-
+# Verifica se o remetente tem saldo suficiente para fazer a transação / Checks if the sender has enough balance to make the transaction
 def verifica_transacao(transacao):
     saldo_remetente = obtem_saldo(transacao['remetente'])
     return saldo_remetente >= transacao['valor']
 
-
+# Retorna o saldo de um participante / Returns the balance of a participant
 def obtem_saldo(participante):
     """Calcula e retorna o saldo para um participante.
 
@@ -170,6 +172,7 @@ def mine_block():
 
     return True
 
+# Retorna ultimo valor do blockchain / Returns the last value of the blockchain
 def obtem_ultimo_valor():
     """Retorna o ultimo valor corrente do blockchain"""
     if len(blockchain) < 1:
@@ -178,7 +181,7 @@ def obtem_ultimo_valor():
         return blockchain[-1]
 
 
-
+# Inclui novo bloco no blockchain / Includes new block in blockchain
 def add_transacao(destinatario, remetente=proprietario, valor=1.0):
     """Anexa um novo valor como bloco no blockchain
         remetente: quem envia o valor
@@ -200,17 +203,18 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         return True
     return False
 
+# Recebe nome e valor a ser transferido a um destinatário / Receives name and value to be transferred to a recipient
 def obtem_valor_transacao():
     tx_remetente = input('Entre para quem deseja enviar o valor: ')
     tx_valor = float(input('Entre com o seu valor de transação:'))
     return (tx_remetente, tx_valor)
 
-
+# Recebe escolha de operação do usuário / Receive choice of user operation
 def obtem_escolha_usuario():
     escolha = input('Sua escolha: ')
     return escolha
 
-
+# imprime na tela o blockchain / prints the blockchain on the screen
 def imprime_blockchain():
     # saida da lista blockchain no console / out of the blockchain list on the console
     for block in blockchain:
@@ -219,7 +223,7 @@ def imprime_blockchain():
     else:
         print('-' * 20)
 
-
+# Verifica Integridade do blockchain / Verify blockchain integrity
 def verifica_chave():
 
     for (indice, bloco) in enumerate(blockchain):
@@ -232,6 +236,7 @@ def verifica_chave():
             return False
     return True
 
+# Verifica se todas transações são verdadeiras / Verify that all transactions are true
 def verifica_trasacoes():
     # todas as transações devem ser verdadeiras / all transactions must be true
     return all([verifica_transacao(tx) for tx in transacao_aberta])
