@@ -10,19 +10,8 @@ import hashlib as hl
 # Recompensa dada aos mineradores (por criar um novo bloco) / recompensation given to miners (for creating a new block)
 RECOMPENSA_MINERACAO = 10
 
-# Inicializando a lista blockchain / Initializing the blockchain list
-bloco_genesis = {
-    'hash_anterior': '',
-    'indice': 0,
-    'transacoes': [],
-    'prova': 100
-}
 # Criação do blockchain como lista vazia / blockchain creation as empty list
-
-blockchain = [bloco_genesis]
-
-# Transações não tratadas / unhandled transactions
-transacao_aberta = []
+blockchain = []
 
 # Proprietário deste no blockchain, minha identificação como owner / Owner of this in blockchain, my owner ID
 proprietario = 'Jadson'
@@ -31,39 +20,59 @@ proprietario = 'Jadson'
 participantes = {'Jadson'}
 
 def carrega_dados():
-    with open('blockchain.txt', mode='r') as arq:
 
-        # # pickle loads para arquivos binários  / pickle loads for binary files
-        # # pickle não perde informações como o json no caso desta aplicação / pickle does not lose information like json in the case of this application
-        # conteudo_arquivo = pickle.loads(arq.read())
-        # print(conteudo_arquivo)
-        conteudo_arquivo = arq.readlines()
-        global blockchain
-        global transacao_aberta
-        # blockchain = conteudo_arquivo['chain']
-        # transacao_aberta = conteudo_arquivo['ta']
-        blockchain = json.loads(conteudo_arquivo[0][:-1])
-        #blockchain = [{'hash_anterior': bloco['hash_anterior'], 'index': bloco['index'], 'prova': bloco['prova'], 'transacoes': []} por bloco in blockchain ]
+    global blockchain
+    global transacao_aberta
 
-        blockchain_atualizado = []
+    try:
+        with open('blockchain.txt', mode='r') as arq:
 
-        for bloco in blockchain:
-            bloco_atualizado = {
-                'hash_anterior': bloco['hash_anterior'],
-                'indice': bloco['indice'],
-                'prova': bloco['prova'],
-                'transacoes': [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
-            }
-            blockchain_atualizado.append(bloco_atualizado)
+            # # pickle loads para arquivos binários  / pickle loads for binary files
+            # # pickle não perde informações como o json no caso desta aplicação / pickle does not lose information like json in the case of this application
+            # conteudo_arquivo = pickle.loads(arq.read())
+            # print(conteudo_arquivo)
+            conteudo_arquivo = arq.readlines()
+            
+            # blockchain = conteudo_arquivo['chain']
+            # transacao_aberta = conteudo_arquivo['ta']
+            blockchain = json.loads(conteudo_arquivo[0][:-1])
+            #blockchain = [{'hash_anterior': bloco['hash_anterior'], 'index': bloco['index'], 'prova': bloco['prova'], 'transacoes': []} por bloco in blockchain ]
 
-        blockchain = blockchain_atualizado
+            blockchain_atualizado = []
 
-        transacoes_atualizadas = []
-        transacao_aberta = json.loads(conteudo_arquivo[1])
-        for tx in transacao_aberta:
-            transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
-            transacoes_atualizadas.append(transacao_atualizada)
-        transacao_aberta = transacoes_atualizadas
+            for bloco in blockchain:
+                bloco_atualizado = {
+                    'hash_anterior': bloco['hash_anterior'],
+                    'indice': bloco['indice'],
+                    'prova': bloco['prova'],
+                    'transacoes': [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
+                }
+                blockchain_atualizado.append(bloco_atualizado)
+
+            blockchain = blockchain_atualizado
+
+            transacoes_atualizadas = []
+            transacao_aberta = json.loads(conteudo_arquivo[1])
+            for tx in transacao_aberta:
+                transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
+                transacoes_atualizadas.append(transacao_atualizada)
+            transacao_aberta = transacoes_atualizadas
+    except IOError:
+        print('Arquivo nao encontrado / File not found .')
+
+        # Inicializando a lista blockchain / Initializing the blockchain list
+        bloco_genesis = {
+            'hash_anterior': '',
+            'indice': 0,
+            'transacoes': [],
+            'prova': 100
+        }
+
+        # Criação do blockchain como lista vazia / blockchain creation as empty list
+        blockchain = [bloco_genesis]
+
+        # Transações não tratadas / unhandled transactions
+        transacao_aberta = []
 
 # Salva estado do blockchain em formato json em um arquivo .txt / Save blockchain state in json format to a .txt file
 def salvar_dados():
@@ -84,14 +93,13 @@ def salvar_dados():
             # arq.write(pickle.dumps(salva_dados))
 
         print('Blockchain salvo com sucesso')
-    except:
+    except IOError:
         print('Erro ao gravar o blockchain')
 
 
 def prova_validade(transacoes, ultimo_hash, prova):
     # Cria string com as entradas de hash / create string with hash entries
     suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
-    print(suposicao)
     # string de hash
     # não é o mesmo hash que será guardado em hash_anterior / is not the same hash that will be saved in hash_previous
     suposicao_hash = hash_string_256(suposicao)
