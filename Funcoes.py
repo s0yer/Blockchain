@@ -4,7 +4,7 @@ from collections import OrderedDict
 import json
 import pickle # turn in a binary data / converte para binário, serializa os dados
 import hashlib as hl
-
+from bloco import Bloco
 
 # coding=utf-8
 # Recompensa dada aos mineradores (por criar um novo bloco) / recompensation given to miners (for creating a new block)
@@ -41,12 +41,14 @@ def carrega_dados():
             blockchain_atualizado = []
 
             for bloco in blockchain:
-                bloco_atualizado = {
-                    'hash_anterior': bloco['hash_anterior'],
-                    'indice': bloco['indice'],
-                    'prova': bloco['prova'],
-                    'transacoes': [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
-                }
+                tx_convertido = [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
+                bloco_atualizado = Bloco(bloco['indice'], bloco['hash_anterior'], tx_convertido, bloco['prova'], bloco['seloTempo'] )
+                #bloco_atualizado = {
+                #    'hash_anterior': bloco['hash_anterior'],
+                #    'indice': bloco['indice'],
+                #    'prova': bloco['prova'],
+                #    'transacoes': [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
+                #}
                 blockchain_atualizado.append(bloco_atualizado)
 
             blockchain = blockchain_atualizado
@@ -61,12 +63,13 @@ def carrega_dados():
         print('Arquivo nao encontrado / File not found .')
 
         # Inicializando a lista blockchain / Initializing the blockchain list
-        bloco_genesis = {
-            'hash_anterior': '',
-            'indice': 0,
-            'transacoes': [],
-            'prova': 100
-        }
+        bloco_genesis = Bloco(0, '', [], 100, 0)
+        #bloco_genesis = {
+        #    'hash_anterior': '',
+        #    'indice': 0,
+        #    'transacoes': [],
+        #    'prova': 100
+        #}
 
         # Criação do blockchain como lista vazia / blockchain creation as empty list
         blockchain = [bloco_genesis]
@@ -133,7 +136,10 @@ def obtem_saldo(participante):
 
     # Busca a lista de todos montantes enviados para uma dada pessoa / search the list of all amounts sent to a given person
     # Busca os montantes enviados de transações abertas / search for amounts sent from open transactions
-    tx_remetente = [[tx['valor'] for tx in bloco['transacoes'] if tx['remetente'] == participante] for bloco in blockchain]
+    tx_remetente = [[tx['valor'] for tx in bloco.transacoes if tx['remetente'] == participante] for bloco in blockchain]
+    
+    #busca uma lista de todas moedas a serem enviadas para uma pessoa
+    #procura pelos valores de transacoes abertas
     aberta_tx_remetente = [tx['valor'] for tx in transacao_aberta if tx['remetente'] == participante]
     tx_remetente.append(aberta_tx_remetente)
     print(tx_remetente)
@@ -142,7 +148,7 @@ def obtem_saldo(participante):
     valor_enviado = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_remetente, 0)
 
     # busca o montante de moedas recebidas, é ignorado aqui transações abertas / search the amount of currencies received, is skipped here open transactions
-    tx_destinatario = [[tx['valor'] for tx in bloco['transacoes'] if tx['destinatario'] == participante] for bloco in blockchain]
+    tx_destinatario = [[tx['valor'] for tx in bloco.transacoes if tx['destinatario'] == participante] for bloco in blockchain]
     valor_recebido = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_destinatario, 0)
 
     return valor_recebido - valor_enviado
@@ -168,11 +174,12 @@ def mine_block():
     # created a new list equal to the open transaction list, so as not to manipulate the original open transaction list
     transacao_copiada = transacao_aberta[:]
     transacao_copiada.append(transacao_recompensa)
-    bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
-             'indice': len(blockchain),
-             'transacoes': transacao_copiada,
-             'prova': prova
-             }
+    bloco = Bloco(len(blockchain), hash_bloco,  transacao_copiada, prova)
+    #bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
+    #         'indice': len(blockchain),
+    #         'transacoes': transacao_copiada,
+    #         'prova': prova
+    #         }
     blockchain.append(bloco)
 
     print(proprietario)
@@ -225,21 +232,22 @@ def obtem_escolha_usuario():
 # imprime na tela o blockchain / prints the blockchain on the screen
 def imprime_blockchain():
     # saida da lista blockchain no console / out of the blockchain list on the console
-    for block in blockchain:
+    for bloco in blockchain:
         print('Saida do Blockchain: ')
-        print(block)
+        print(bloco)
     else:
         print('-' * 20)
 
 # Verifica Integridade do blockchain / Verify blockchain integrity
 def verifica_chave():
 
+    #verificar se é: hash_anterior ou hash_bloco
     for (indice, bloco) in enumerate(blockchain):
         if indice == 0:
             continue
-        if bloco['hash_anterior'] != hash_bloco(blockchain[indice-1]):
+        if bloco.hash_bloco != hash_bloco(blockchain[indice-1]):
             return False
-        if not prova_validade(bloco['transacoes'][:-1], bloco['hash_anterior'], bloco['prova']):
+        if not prova_validade(bloco.transacoes[:-1], bloco.hash_bloco, bloco.prova):
             print('Prova de trabalho não é válida ...!!')
             return False
     return True

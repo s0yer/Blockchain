@@ -12,7 +12,7 @@ while esperando_entrada:
     print('i: Mostrar no console os elementos blockchain:')
     print('p: Mostrar os participantes:')
     print('m: Minerar um novo bloco')
-    print('h: Manipular o blockchain')
+    #print('h: Manipular o blockchain')
     print('c: Checa validade da transasao')
     print('o: Obtem saldo do participante')
     print('s: Sair. ')
@@ -47,13 +47,13 @@ while esperando_entrada:
             mine_block()'''
 
 
-    elif escolha == 'h':
-        if len(blockchain) >= 1:
-            blockchain[0] = {
-                'hash_anterior': '',
-                'indice': 0,
-                'transacoes': [{'remetente': 'Jadson', 'destinatario': 'Kaline', 'valor': 8000.0}]
-            }
+    #elif escolha == 'h':
+    #    if len(blockchain) >= 1:
+    #        blockchain[0] = {
+    #            'hash_anterior': '',
+    #            'indice': 0,
+    #            'transacoes': [{'remetente': 'Jadson', 'destinatario': 'Kaline', 'valor': 8000.0}]
+    #        }
 
     elif escolha == 'c':
         if verifica_trasacoes():
