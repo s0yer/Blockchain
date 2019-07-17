@@ -59,7 +59,7 @@ def carrega_dados():
                 transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
                 transacoes_atualizadas.append(transacao_atualizada)
             transacao_aberta = transacoes_atualizadas
-    except IOError:
+    except (IOError, IndexError):
         print('Arquivo nao encontrado / File not found .')
 
         # Inicializando a lista blockchain / Initializing the blockchain list
@@ -85,7 +85,8 @@ def salvar_dados():
         #extension .p => binary , .txt => json
         with open('blockchain.txt', mode='w') as arq:
 
-            arq.write(json.dumps(blockchain))
+            saveapto_blockchain = [bloco.__dict__ for bloco in blockchain]
+            arq.write(json.dumps((saveapto_blockchain))
             arq.write('\n')
             arq.write(json.dumps(transacao_aberta))
 

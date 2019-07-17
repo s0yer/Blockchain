@@ -14,5 +14,7 @@ def hash_bloco(bloco):
         :bloco: Deve ser tirado o hash do bloco
     """
     #return '-'.join([str(bloco[k]) for k in bloco])
-    return hash_string_256(json.dumps(bloco, sort_keys=True).encode())
-
+    
+    #cria um nova cópia, um novo dicionário toda vez que é retirado o hash de um novo bloco
+    hashapto_bloco = bloco.__dict__.copy()
+    return hash_string_256(json.dumps(hashapto_bloco, sort_keys=True).encode())
