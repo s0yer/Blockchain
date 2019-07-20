@@ -83,12 +83,14 @@ def salvar_dados():
     try:
         #mode w for json, mode wb for binary
         #extension .p => binary , .txt => json
-        with open('blockchain.txt', mode='w') as arq:
+        with open('blockchain.p', mode='wb') as arq:
 
+            #problemas para gravar em formato json, a função não consegue serializar para o dump
             saveapto_blockchain = [bloco.__dict__ for bloco in blockchain]
-            arq.write(json.dumps((saveapto_blockchain))
-            arq.write('\n')
-            arq.write(json.dumps(transacao_aberta))
+            print(saveapto_blockchain)
+            #arq.write(json.dumps(saveapto_blockchain))
+            #arq.write('\n')
+            #arq.write(json.dumps(transacao_aberta))
 
             # salva_dados = {
             #     'chain': blockchain,

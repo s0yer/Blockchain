@@ -23,7 +23,7 @@ while esperando_entrada:
         tx_dados = obtem_valor_transacao()
         destinatario, valor = tx_dados
 
-        #Adiciona a o valor da transação para o blackchain
+        #Adiciona a o valor da transação para o blockchain/ Adds the transaction value to the blockchain
         if add_transacao(destinatario, valor=valor):
             print('Transação adicionada')
         else:
