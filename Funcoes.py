@@ -1,10 +1,10 @@
 from Hash_util import hash_string_256, hash_bloco
 from functools import reduce
-from collections import OrderedDict
 import json
 import pickle # turn in a binary data / converte para binário, serializa os dados
 import hashlib as hl
 from bloco import Bloco
+from transacao import Transacao
 
 # coding=utf-8
 # Recompensa dada aos mineradores (por criar um novo bloco) / recompensation given to miners (for creating a new block)
@@ -40,8 +40,10 @@ def carrega_dados():
 
             blockchain_atualizado = []
 
+            
             for bloco in blockchain:
-                tx_convertido = [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
+                tx_convertido = [Transacao(tx['remetente']. tx['destinatario'], tx['valor']) for tx in bloco['transacoes']]
+                #tx_convertido = [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
                 bloco_atualizado = Bloco(bloco['indice'], bloco['hash_anterior'], tx_convertido, bloco['prova'], bloco['seloTempo'] )
                 #bloco_atualizado = {
                 #    'hash_anterior': bloco['hash_anterior'],
@@ -56,7 +58,8 @@ def carrega_dados():
             transacoes_atualizadas = []
             transacao_aberta = json.loads(conteudo_arquivo[1])
             for tx in transacao_aberta:
-                transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
+                transacao_atualizada = Transacao(tx['remetente'], tx['destinatario'], tx['valor'])
+                #transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
                 transacoes_atualizadas.append(transacao_atualizada)
             transacao_aberta = transacoes_atualizadas
     except (IOError, IndexError):
@@ -83,14 +86,15 @@ def salvar_dados():
     try:
         #mode w for json, mode wb for binary
         #extension .p => binary , .txt => json
-        with open('blockchain.p', mode='wb') as arq:
+        with open('blockchain.p', mode='w') as arq:
 
             #problemas para gravar em formato json, a função não consegue serializar para o dump
             saveapto_blockchain = [bloco.__dict__ for bloco in blockchain]
             print(saveapto_blockchain)
-            #arq.write(json.dumps(saveapto_blockchain))
-            #arq.write('\n')
-            #arq.write(json.dumps(transacao_aberta))
+            arq.write(json.dumps(saveapto_blockchain))
+            arq.write('\n')
+            saveapto_tx = [tx.__dict__ for tx in transacao_aberta]
+            arq.write(json.dumps(transacao_aberta))
 
             # salva_dados = {
             #     'chain': blockchain,
