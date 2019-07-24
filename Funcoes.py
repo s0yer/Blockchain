@@ -109,7 +109,7 @@ def salvar_dados():
 
 def prova_validade(transacoes, ultimo_hash, prova):
     # Cria string com as entradas de hash / create string with hash entries
-    suposicao = (str(transacoes) + str(ultimo_hash) + str(prova)).encode()
+    suposicao = (str(tx.dict_ordenado() for tx in transacoes) + str(ultimo_hash) + str(prova)).encode()
     # string de hash
     # não é o mesmo hash que será guardado em hash_anterior / is not the same hash that will be saved in hash_previous
     suposicao_hash = hash_string_256(suposicao)
@@ -130,8 +130,8 @@ def prova_trabalho():
 
 # Verifica se o remetente tem saldo suficiente para fazer a transação / Checks if the sender has enough balance to make the transaction
 def verifica_transacao(transacao):
-    saldo_remetente = obtem_saldo(transacao['remetente'])
-    return saldo_remetente >= transacao['valor']
+    saldo_remetente = obtem_saldo(transacao.remetente)
+    return saldo_remetente >= transacao.valor
 
 # Retorna o saldo de um participante / Returns the balance of a participant
 def obtem_saldo(participante):
@@ -143,11 +143,11 @@ def obtem_saldo(participante):
 
     # Busca a lista de todos montantes enviados para uma dada pessoa / search the list of all amounts sent to a given person
     # Busca os montantes enviados de transações abertas / search for amounts sent from open transactions
-    tx_remetente = [[tx['valor'] for tx in bloco.transacoes if tx['remetente'] == participante] for bloco in blockchain]
+    tx_remetente = [[tx.valor for tx in bloco.transacoes if tx.remetente == participante] for bloco in blockchain]
     
     #busca uma lista de todas moedas a serem enviadas para uma pessoa
     #procura pelos valores de transacoes abertas
-    aberta_tx_remetente = [tx['valor'] for tx in transacao_aberta if tx['remetente'] == participante]
+    aberta_tx_remetente = [tx.valor for tx in transacao_aberta if tx.remetente == participante]
     tx_remetente.append(aberta_tx_remetente)
     print(tx_remetente)
 
@@ -155,7 +155,7 @@ def obtem_saldo(participante):
     valor_enviado = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_remetente, 0)
 
     # busca o montante de moedas recebidas, é ignorado aqui transações abertas / search the amount of currencies received, is skipped here open transactions
-    tx_destinatario = [[tx['valor'] for tx in bloco.transacoes if tx['destinatario'] == participante] for bloco in blockchain]
+    tx_destinatario = [[tx.valor for tx in bloco.transacoes if tx.destinatario == participante] for bloco in blockchain]
     valor_recebido = reduce(lambda tx_soma, tx_montante: tx_soma + sum(tx_montante) if len(tx_montante) > 0 else tx_soma + 0, tx_destinatario, 0)
 
     return valor_recebido - valor_enviado
@@ -174,6 +174,7 @@ def mine_block():
         'destinatario': proprietario,
         'valor': RECOMPENSA_MINERACAO
     }"""
+    transacao_recompensa = Transacao()
     transacao_recompensa = OrderedDict([('remetente','MINERACAO'),('destinatario', proprietario),('valor',RECOMPENSA_MINERACAO)])
 
 
@@ -215,12 +216,14 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         'destinatario': destinatario,
         'valor': valor
     }"""
-    transacao = OrderedDict([('remetente',remetente),('destinatario',destinatario),('valor',valor)])
+    transacao = Transacao(remetente,destinatario,valor)
+    #transacao = OrderedDict([('remetente',remetente),('destinatario',destinatario),('valor',valor)])
 
     if verifica_transacao(transacao):
         transacao_aberta.append(transacao)
-        participantes.add(remetente)
-        participantes.add(destinatario)
+        # ira ser adicionados sets para os participantes
+        # participantes.add(remetente)
+        # participantes.add(destinatario)
         salvar_dados()
         return True
     return False
