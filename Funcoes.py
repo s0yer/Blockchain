@@ -1,4 +1,5 @@
-from Hash_util import hash_string_256, hash_bloco
+# coding=utf-8
+import Hash_util
 from functools import reduce
 import json
 import pickle # turn in a binary data / converte para binário, serializa os dados
@@ -112,7 +113,7 @@ def prova_validade(transacoes, ultimo_hash, prova):
     suposicao = (str(tx.dict_ordenado() for tx in transacoes) + str(ultimo_hash) + str(prova)).encode()
     # string de hash
     # não é o mesmo hash que será guardado em hash_anterior / is not the same hash that will be saved in hash_previous
-    suposicao_hash = hash_string_256(suposicao)
+    suposicao_hash = Hash_util.hash_string_256(suposicao)
     print(suposicao_hash)
     # apenas o hash(que é baseado nas entrados abaixo), que começam com 2 zeros '00' / just the hash (which is based on the inputs below), which start with 2 zeros '00'
     # Esta condição que pode ser definida de outra forma / This condition, which can be defined differently
@@ -122,7 +123,7 @@ def prova_validade(transacoes, ultimo_hash, prova):
 # Verifica se o trabalho de mineração efetuado é válido / Checks whether the mining work done is valid
 def prova_trabalho():
     ultimo_bloco = blockchain[-1]
-    ultimo_hash = hash_bloco(ultimo_bloco)
+    ultimo_hash = Hash_util.hash_bloco(ultimo_bloco)
     prova = 0
     while not prova_validade(transacao_aberta, ultimo_hash, prova):
         prova += 1
@@ -165,7 +166,7 @@ def mine_block():
     # busca o ultimo bloco corrente do blockchain / search the last block block
     ultimo_bloco = blockchain[-1]
     # hash do ultimo bloco, para comparar com o valor guardado / hash of the last block, to compare with the saved value
-    bloco_hashed = hash_bloco(ultimo_bloco)
+    bloco_hashed = Hash_util.hash_bloco(ultimo_bloco)
     print(bloco_hashed)
     prova = prova_trabalho()
     # transação de recompensa para os mineradores / reward transaction for miners
@@ -182,7 +183,7 @@ def mine_block():
     # created a new list equal to the open transaction list, so as not to manipulate the original open transaction list
     transacao_copiada = transacao_aberta[:]
     transacao_copiada.append(transacao_recompensa)
-    bloco = Bloco(len(blockchain), hash_bloco,  transacao_copiada, prova)
+    bloco = Bloco(len(blockchain), Hash_util.hash_bloco, transacao_copiada, prova)
     #bloco = {'hash_anterior': hash_bloco(ultimo_bloco),
     #         'indice': len(blockchain),
     #         'transacoes': transacao_copiada,
@@ -255,7 +256,7 @@ def verifica_chave():
     for (indice, bloco) in enumerate(blockchain):
         if indice == 0:
             continue
-        if bloco.hash_bloco != hash_bloco(blockchain[indice-1]):
+        if bloco.hash_bloco != Hash_util.hash_bloco(blockchain[indice - 1]):
             return False
         if not prova_validade(bloco.transacoes[:-1], bloco.hash_bloco, bloco.prova):
             print('Prova de trabalho não é válida ...!!')

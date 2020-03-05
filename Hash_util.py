@@ -1,3 +1,4 @@
+# coding=utf-8
 import hashlib as hl # Importa hashlib e faz ser usado como uma abreviação 'hl' / Imports hashlib and makes it used as an abbreviation 'hl'
 import json
 
@@ -13,7 +14,7 @@ def hash_bloco(bloco):
         Argumentos:
         :bloco: Deve ser tirado o hash do bloco
     """
-    #return '-'.join([str(bloco[k]) for k in bloco])
+    #return '-'.join([str(bloco[k]) for k in blnoco])
     
     #cria um nova cópia, um novo dicionário toda vez que é retirado o hash de um novo bloco
     hashapto_bloco = bloco.__dict__.copy()
