@@ -6,5 +6,5 @@ class Transacao:
         self.destinatario = destinatario
         self.valor = valor
 
-    def dict_ondenado(self):
+    def dict_ordenado(self):
         return OrderedDict([('remetente', self.remetente),('destinatario', self.destinatario), ('valor', self.valor)])

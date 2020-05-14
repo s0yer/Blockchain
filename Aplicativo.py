@@ -31,7 +31,7 @@ while esperando_entrada:
         else:
             print('Falha na transação')
 
-        print(transacao_aberta)
+        #print(transacao_aberta)
 
 
     elif escolha == 'i':

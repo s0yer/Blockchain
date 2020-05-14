@@ -18,4 +18,5 @@ def hash_bloco(bloco):
     
     #cria um nova cópia, um novo dicionário toda vez que é retirado o hash de um novo bloco
     hashapto_bloco = bloco.__dict__.copy()
+    hashapto_bloco['transacoes'] = [tx.dict_ordenado() for tx in hashapto_bloco['transacoes']]
     return hash_string_256(json.dumps(hashapto_bloco, sort_keys=True).encode())

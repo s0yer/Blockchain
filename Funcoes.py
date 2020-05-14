@@ -9,7 +9,7 @@ from transacao import Transacao
 
 # coding=utf-8
 # Recompensa dada aos mineradores (por criar um novo bloco) / recompensation given to miners (for creating a new block)
-RECOMPENSA_MINERACAO = 10
+RECOMPENSA_MINERACAO = 5
 
 # Criação do blockchain como lista vazia / blockchain creation as empty list
 blockchain = []
@@ -44,7 +44,6 @@ def carrega_dados():
             
             for bloco in blockchain:
                 tx_convertido = [Transacao(tx['remetente']. tx['destinatario'], tx['valor']) for tx in bloco['transacoes']]
-                #tx_convertido = [OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])]) for tx in bloco['transacoes']]
 
                 # bloco atualizado utilizando class Bloco, block object
                 bloco_atualizado = Bloco(bloco['indice'], bloco['hash_anterior'], tx_convertido, bloco['prova'], bloco['seloTempo'] )
@@ -57,7 +56,6 @@ def carrega_dados():
             transacao_aberta = json.loads(conteudo_arquivo[1])
             for tx in transacao_aberta:
                 transacao_atualizada = Transacao(tx['remetente'], tx['destinatario'], tx['valor'])
-                #transacao_atualizada = OrderedDict([('remetente',tx['remetente']),('destinatario',tx['destinatario']),('valor',tx['valor'])])
                 transacoes_atualizadas.append(transacao_atualizada)
             transacao_aberta = transacoes_atualizadas
     except (IOError, IndexError):
@@ -81,12 +79,12 @@ def salvar_dados():
         with open('blockchain.p', mode='w') as arq:
 
             #problemas para gravar em formato json, a função não consegue serializar para o dump
-            saveapto_blockchain = [bloco.__dict__ for bloco in blockchain]
-            print(saveapto_blockchain)
+            saveapto_blockchain = [bloco.__dict__ for bloco in [Bloco(elemBloco.indice, elemBloco.hash_anterior, elemBloco.seloTempo, [tx.__dict__ for tx in elemBloco.transacoes], elemBloco.prova) for elemBloco in blockchain]]
+            #print(saveapto_blockchain)
             arq.write(json.dumps(saveapto_blockchain))
             arq.write('\n')
             saveapto_tx = [tx.__dict__ for tx in transacao_aberta]
-            arq.write(json.dumps(transacao_aberta))
+            arq.write(json.dumps(saveapto_tx))
 
             # salva_dados = {
             #     'chain': blockchain,
@@ -101,7 +99,7 @@ def salvar_dados():
 
 def prova_validade(transacoes, ultimo_hash, prova):
     # Cria string com as entradas de hash / create string with hash entries
-    suposicao = (str(tx.dict_ordenado() for tx in transacoes) + str(ultimo_hash) + str(prova)).encode()
+    suposicao = (str([tx.dict_ordenado() for tx in transacoes]) + str(ultimo_hash) + str(prova)).encode()
     # string de hash
     # não é o mesmo hash que será guardado em hash_anterior / is not the same hash that will be saved in hash_previous
     suposicao_hash = Hash_util.hash_string_256(suposicao)
@@ -122,6 +120,7 @@ def prova_trabalho():
 
 # Verifica se o remetente tem saldo suficiente para fazer a transação / Checks if the sender has enough balance to make the transaction
 def verifica_transacao(transacao):
+    # verifica se o remetente tem valor suficiente
     saldo_remetente = obtem_saldo(transacao.remetente)
     return saldo_remetente >= transacao.valor
 
@@ -132,7 +131,6 @@ def obtem_saldo(participante):
         :participante: A pessoa para a qual é calculado o saldo.
 
     """
-
     # Busca a lista de todos montantes enviados para uma dada pessoa / search the list of all amounts sent to a given person
     # Busca os montantes enviados de transações abertas / search for amounts sent from open transactions
     tx_remetente = [[tx.valor for tx in bloco.transacoes if tx.remetente == participante] for bloco in blockchain]
@@ -166,8 +164,9 @@ def mine_block():
         'destinatario': proprietario,
         'valor': RECOMPENSA_MINERACAO
     }"""
-    transacao_recompensa = Transacao()
-    transacao_recompensa = OrderedDict([('remetente','MINERACAO'),('destinatario', proprietario),('valor',RECOMPENSA_MINERACAO)])
+
+    #!!!!!!!!!!!!!!!!!
+    transacao_recompensa = Transacao('MINERACAO',proprietario, RECOMPENSA_MINERACAO,)
 
 
     # cria uma nova lista igual a lista de transação aberta, para nao manipular a lista original de transação aberta
@@ -206,13 +205,11 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
         'valor': valor
     }"""
     transacao = Transacao(remetente,destinatario,valor)
-    #transacao = OrderedDict([('remetente',remetente),('destinatario',destinatario),('valor',valor)])
 
     if verifica_transacao(transacao):
         transacao_aberta.append(transacao)
         # ira ser adicionados sets para os participantes
-        # participantes.add(remetente)
-        # participantes.add(destinatario)
+
         salvar_dados()
         return True
     return False
