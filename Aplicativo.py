@@ -45,9 +45,6 @@ while esperando_entrada:
         if Funcoes.mine_block():
             transacao_aberta = []
             Funcoes.salvar_dados()
-        '''else:
-            mine_block()'''
-
 
     #elif escolha == 'h':
     #    if len(blockchain) >= 1:

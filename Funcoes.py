@@ -76,11 +76,13 @@ def salvar_dados():
     try:
         #mode w for json, mode wb for binary
         #extension .p => binary , .txt => json
-        with open('blockchain.p', mode='w') as arq:
+        with open('blockchain.txt', mode='w') as arq:
 
             #problemas para gravar em formato json, a função não consegue serializar para o dump
-            saveapto_blockchain = [bloco.__dict__ for bloco in [Bloco(elemBloco.indice, elemBloco.hash_anterior, elemBloco.seloTempo, [tx.__dict__ for tx in elemBloco.transacoes], elemBloco.prova) for elemBloco in blockchain]]
-            #print(saveapto_blockchain)
+            saveapto_blockchain = [bloco.__dict__ for bloco in [Bloco(elemBloco.indice, elemBloco.hash_anterior, [tx.__dict__ for tx in elemBloco.transacoes], elemBloco.prova, elemBloco.seloTempo) for elemBloco in blockchain]]
+            #esta funcionando apenas com str()
+            print(saveapto_blockchain)
+            arq.write('\n')
             arq.write(json.dumps(saveapto_blockchain))
             arq.write('\n')
             saveapto_tx = [tx.__dict__ for tx in transacao_aberta]
@@ -156,7 +158,7 @@ def mine_block():
     ultimo_bloco = blockchain[-1]
     # hash do ultimo bloco, para comparar com o valor guardado / hash of the last block, to compare with the saved value
     bloco_hashed = Hash_util.hash_bloco(ultimo_bloco)
-    print(bloco_hashed)
+    # print(bloco_hashed)
     prova = prova_trabalho()
     # transação de recompensa para os mineradores / reward transaction for miners
     """transacao_recompensa ={
@@ -175,7 +177,6 @@ def mine_block():
     transacao_copiada.append(transacao_recompensa)
 
     #class bloco
-    bloco = Bloco(len(blockchain), Hash_util.hash_bloco, transacao_copiada, prova)
     blockchain.append(bloco)
 
     #print(proprietario)
