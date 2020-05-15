@@ -9,10 +9,13 @@ from transacao import Transacao
 
 # coding=utf-8
 # Recompensa dada aos mineradores (por criar um novo bloco) / recompensation given to miners (for creating a new block)
-RECOMPENSA_MINERACAO = 5
+RECOMPENSA_MINERACAO = 10
 
 # Criação do blockchain como lista vazia / blockchain creation as empty list
 blockchain = []
+
+# transacoes nao tratadas
+transacao_aberta = []
 
 # Proprietário deste no blockchain, minha identificação como owner / Owner of this in blockchain, my owner ID
 proprietario = 'Jadson'
@@ -41,7 +44,6 @@ def carrega_dados():
 
             blockchain_atualizado = []
 
-            
             for bloco in blockchain:
                 tx_convertido = [Transacao(tx['remetente']. tx['destinatario'], tx['valor']) for tx in bloco['transacoes']]
 
@@ -105,7 +107,7 @@ def prova_validade(transacoes, ultimo_hash, prova):
     # string de hash
     # não é o mesmo hash que será guardado em hash_anterior / is not the same hash that will be saved in hash_previous
     suposicao_hash = Hash_util.hash_string_256(suposicao)
-    print(suposicao_hash)
+    # print(suposicao_hash)
     # apenas o hash(que é baseado nas entrados abaixo), que começam com 2 zeros '00' / just the hash (which is based on the inputs below), which start with 2 zeros '00'
     # Esta condição que pode ser definida de outra forma / This condition, which can be defined differently
     return suposicao_hash[0:2] == '00'
@@ -168,7 +170,7 @@ def mine_block():
     }"""
 
     #!!!!!!!!!!!!!!!!!
-    transacao_recompensa = Transacao('MINERACAO',proprietario, RECOMPENSA_MINERACAO,)
+    transacao_recompensa = Transacao('MINERACAO', proprietario, RECOMPENSA_MINERACAO)
 
 
     # cria uma nova lista igual a lista de transação aberta, para nao manipular a lista original de transação aberta
@@ -190,8 +192,7 @@ def obtem_ultimo_valor():
     """Retorna o ultimo valor corrente do blockchain"""
     if len(blockchain) < 1:
         return None
-    else:
-        return blockchain[-1]
+    return blockchain[-1]
 
 
 # Inclui novo bloco no blockchain / Includes new block in blockchain
