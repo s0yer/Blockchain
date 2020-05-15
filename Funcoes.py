@@ -177,6 +177,7 @@ def mine_block():
     transacao_copiada.append(transacao_recompensa)
 
     #class bloco
+    bloco = Bloco(len(blockchain), bloco_hashed, transacao_copiada, prova)
     blockchain.append(bloco)
 
     #print(proprietario)
