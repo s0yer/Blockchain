@@ -54,8 +54,8 @@ def carrega_dados():
 
             blockchain = blockchain_atualizado
 
-            transacoes_atualizadas = []
             transacao_aberta = json.loads(conteudo_arquivo[1])
+            transacoes_atualizadas = []
             for tx in transacao_aberta:
                 transacao_atualizada = Transacao(tx['remetente'], tx['destinatario'], tx['valor'])
                 transacoes_atualizadas.append(transacao_atualizada)
