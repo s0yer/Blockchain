@@ -21,7 +21,7 @@ transacao_aberta = []
 proprietario = 'Jadson'
 
 # Criação de set para lista de participantes / set creation for participant list
-participantes = {'Jadson'}
+# participantes = {'Jadson'}
 
 def carrega_dados():
 
@@ -29,7 +29,7 @@ def carrega_dados():
     global transacao_aberta
 
     try:
-        with open('blockchain.txt', mode='r') as arq:
+        with open('blockchain.txt', mode='r', encoding='utf-8') as arq:
 
             # # pickle loads para arquivos binários  / pickle loads for binary files
             # # pickle não perde informações como o json no caso desta aplicação / pickle does not lose information like json in the case of this application
@@ -45,7 +45,7 @@ def carrega_dados():
             blockchain_atualizado = []
 
             for bloco in blockchain:
-                tx_convertido = [Transacao(tx['remetente']. tx['destinatario'], tx['valor']) for tx in bloco['transacoes']]
+                tx_convertido = [Transacao(tx['remetente'], tx['destinatario'], tx['valor']) for tx in bloco['transacoes']]
 
                 # bloco atualizado utilizando class Bloco, block object
                 bloco_atualizado = Bloco(bloco['indice'], bloco['hash_anterior'], tx_convertido, bloco['prova'], bloco['seloTempo'] )
@@ -60,17 +60,17 @@ def carrega_dados():
                 transacao_atualizada = Transacao(tx['remetente'], tx['destinatario'], tx['valor'])
                 transacoes_atualizadas.append(transacao_atualizada)
             transacao_aberta = transacoes_atualizadas
+
     except (IOError, IndexError):
         print('Arquivo nao encontrado / File not found .')
-
         # Inicializando a lista blockchain / Initializing the blockchain list
         bloco_genesis = Bloco(0, '', [], 100, 0)
-
         # Criação do blockchain como lista vazia / blockchain creation as empty list
         blockchain = [bloco_genesis]
-
         # Transações não tratadas / unhandled transactions
         transacao_aberta = []
+    finally:
+        print('Limpeza / Wipe')
 
 # Salva estado do blockchain em formato json em um arquivo .txt / Save blockchain state in json format to a .txt file
 def salvar_dados():
@@ -79,22 +79,13 @@ def salvar_dados():
         #mode w for json, mode wb for binary
         #extension .p => binary , .txt => json
         with open('blockchain.txt', mode='w') as arq:
-
             #problemas para gravar em formato json, a função não consegue serializar para o dump
             saveapto_blockchain = [bloco.__dict__ for bloco in [Bloco(elemBloco.indice, elemBloco.hash_anterior, [tx.__dict__ for tx in elemBloco.transacoes], elemBloco.prova, elemBloco.seloTempo) for elemBloco in blockchain]]
-            #esta funcionando apenas com str()
-            print(saveapto_blockchain)
-            arq.write('\n')
             arq.write(json.dumps(saveapto_blockchain))
             arq.write('\n')
+            print(saveapto_blockchain)
             saveapto_tx = [tx.__dict__ for tx in transacao_aberta]
             arq.write(json.dumps(saveapto_tx))
-
-            # salva_dados = {
-            #     'chain': blockchain,
-            #     'ta': transacao_aberta
-            # }
-            # arq.write(pickle.dumps(salva_dados))
 
         print('Blockchain salvo com sucesso')
     except IOError:
