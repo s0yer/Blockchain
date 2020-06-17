@@ -4,6 +4,8 @@
 import Funcoes
 esperando_entrada = True
 
+
+
 # Carrega dados gravados no arquivo blockchain.txt / Loads data recorded in the file blockchain.txt
 Funcoes.carrega_dados()
 
@@ -30,39 +32,22 @@ while esperando_entrada:
             print('Transação adicionada')
         else:
             print('Falha na transação')
-
-        #print(transacao_aberta)
-
-
+        print(transacao_aberta)
     elif escolha == 'i':
         Funcoes.imprime_blockchain()
-
     elif escolha == 'p':
         print(Funcoes.participantes)
-
     elif escolha == 'm':
-
         if Funcoes.mine_block():
             transacao_aberta = []
             Funcoes.salvar_dados()
-
-    #elif escolha == 'h':
-    #    if len(blockchain) >= 1:
-    #        blockchain[0] = {
-    #            'hash_anterior': '',
-    #            'indice': 0,
-    #            'transacoes': [{'remetente': 'Jadson', 'destinatario': 'Kaline', 'valor': 8000.0}]
-    #        }
-
     elif escolha == 'c':
         if Funcoes.verifica_trasacoes():
             print('Todas transacoes são validas')
         else:
             print('Existe(m) transacoes invalidas')
-
     elif escolha == 's':
         esperando_entrada = False
-
     elif escolha == 'o':
         print(Funcoes.obtem_saldo(Funcoes.obtem_escolha_usuario()))
 

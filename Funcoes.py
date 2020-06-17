@@ -9,7 +9,7 @@ from transacao import Transacao
 
 # coding=utf-8
 # Recompensa dada aos mineradores (por criar um novo bloco) / recompensation given to miners (for creating a new block)
-RECOMPENSA_MINERACAO = 10
+RECOMPENSA_MINERACAO = 100
 
 # Criação do blockchain como lista vazia / blockchain creation as empty list
 blockchain = []
@@ -191,19 +191,17 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
     """Anexa um novo valor como bloco no blockchain
         remetente: quem envia o valor
         destinatário: recebe o valor.
-        valor: quantia trasferida
+        valor: quantia trasferida na trasacaso (padrao = 1.00)
     """
     """transacao = {
         'remetente': remetente,
         'destinatario': destinatario,
         'valor': valor
     }"""
-    transacao = Transacao(remetente,destinatario,valor)
-
+    transacao = Transacao(remetente, destinatario, valor)
     if verifica_transacao(transacao):
         transacao_aberta.append(transacao)
         # ira ser adicionados sets para os participantes
-
         salvar_dados()
         return True
     return False
@@ -212,7 +210,7 @@ def add_transacao(destinatario, remetente=proprietario, valor=1.0):
 def obtem_valor_transacao():
     tx_remetente = input('Entre para quem deseja enviar o valor: ')
     tx_valor = float(input('Entre com o seu valor de transação:'))
-    return (tx_remetente, tx_valor)
+    return tx_remetente, tx_valor
 
 # Recebe escolha de operação do usuário / Receive choice of user operation
 def obtem_escolha_usuario():
